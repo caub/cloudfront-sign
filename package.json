@@ -1,21 +1,21 @@
 {
-  "name": "cloudfront-sign",
+  "name": "cloudfront-signer",
   "version": "1.0.0",
   "description": "sign urls for AWS CLoudfront",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "aws-cloudfront-sign": "^2.2.0"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/caub/cloudfront-sign.git"
+    "url": "git+https://github.com/caub/cloudfront-signer.git"
   },
   "keywords": [
     "AWS",
@@ -24,7 +24,7 @@
   "author": "Cyril Auburtin <cyril.auburtin@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/caub/cloudfront-sign/issues"
+    "url": "https://github.com/caub/cloudfront-signer/issues"
   },
-  "homepage": "https://github.com/caub/cloudfront-sign#readme"
+  "homepage": "https://github.com/caub/cloudfront-signer#readme"
 }
