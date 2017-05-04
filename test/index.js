@@ -1,4 +1,4 @@
-const cfUrl = '__cfUrl__';
+const cfUrl = 'https://d123.cloudfront.net';
 const cfKeypairId = '__cfKeypairId__';
 const cfPrivateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEA3SqsHlVmqP6OxcMBZm96sObwGHK3pM7LHl6F8TZ3poPzFgut
@@ -30,23 +30,19 @@ oLWSvbabIU3ANxu6Ich6OGTikQqo+b+Pi0v5lv66nSb1lZSGk2NIll3SEF4/rmx/
 `;
 
 const assert = require('assert');
-const awsCloudfrontSign = require('aws-cloudfront-sign'); // for testing
+const cfSign = require('../');
 
-const cfSignedUrlOld = (path, expireDate, v='') => 
-	awsCloudfrontSign.getSignedUrl(cfUrl + '/' + path + '?v='+v, {
-		expireTime: expireDate,
-		keypairId: cfKeypairId,
-		privateKeyString: cfPrivateKey
-	});
+var d = new Date(2017, 4, 20);
 
-const cfSignedUrl = require('../')({cfUrl, cfKeypairId, cfPrivateKey});
 
-var d = new Date(Date.now()+3600e3);
+assert.equal(
+	cfSign(cfUrl+'/test', d, cfKeypairId, cfPrivateKey),
+	'Expires=1495231200&Signature=rj5SS8iD8NlINEp2OfSA7kG433lAveUf8EgTzkxtJAU~gbB1QpYIuxA6XrIebHJKYkcgYZ03QsDpn7582VJ3E~Y6Z43KdpuBob505wopvmEsCs1aFo323NnziiLesYJMvsaDRYj~kJndoS7pPRCo1VUFbOoTbOquhrHWh57zWUPsaR62AMYQ5Vhf66Uo340a71~zur-D2ez9cDzL3VGF7kD8IoYFsbC9b3~B6aJn3UxSqDBeQZdHaVsyfpV3-eHKOnbjtJPtMj-1wyds28jDiUxfSk~utwLz4z7v~KHD8YqWgX9GwM2K24AFGmJbcfsqzr5DDdgqG69UjmsWSZLvJA__&Key-Pair-Id=__cfKeypairId__'
+);
 
-var url1 = cfSignedUrlOld('stuff/test1', d);
-var url2 = cfSignedUrl('stuff/test1', d);
-assert.equal(url1, url2);
 
-var url1 = cfSignedUrlOld('stuff/test1', d, 'x');
-var url2 = cfSignedUrl('stuff/test1', d, 'x');
-assert.equal(url1, url2);
+assert.equal(
+	cfSign.custom(cfUrl+'/*', d, cfKeypairId, cfPrivateKey),
+	'Expires=1495231200&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMTIzLmNsb3VkZnJvbnQubmV0LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE0OTUyMzEyMDB9fX1dfQ__&Signature=VSBpF5uZ5ok6BZ7lnGjVSqPLpRcN1fDx2ntLEeXCtUXxvN3uw7Bzf5dzU2JaHenJAz2MbxeTMuZ6zQOWUhPSGz4kFX1CH-jPgwpk~-S1fMrnohZ~mlhL91429jHp5~rNeHcVSYysHIJLlvYsjm3QFsaLtHf7ld2ZmlQIMOBQa0GrQN9MZZabfxU-NAXWXMkdOdEUnv9YktQmjO74dNyJTIc38-bjLX1~NE-rDzwy3Y9~naa98Jbi54nOGl-u6po1Yt0SfOkDpA4~ut5G~oZA-AwEVxSdOL7FSRluckRA7ioyC8BXfPts4LcJSRSEnbduG3oxlyJm8mK4pZAjLdV5sw__&Key-Pair-Id=__cfKeypairId__'
+);
+

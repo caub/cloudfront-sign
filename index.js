@@ -7,42 +7,72 @@ const normalizeBase64 = str => str
 	.replace(/=/g, '_');
 
 
+// http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html
+
+module.exports = cfSign;
+
 /** CloudFront url signer
 
-initialize by calling it with cloudfront settings {cfUrl, cfKeypairId, cfPrivateKey}
-// const cfSignedUrl = require('cloudfront-sign')(opts);
+	- url: cloudfront origin + path in S3 for the resource
+	- expires: timestamp (in ms) or Date
+	- keypairId: CloudFront key-pair-id
+	- privateKey: CloudFront certificate as ascii string ( fs.readFileSync(path.resolve('./cloudfront.pem')).toString('ascii') )
 
-returns a signer function with args:
-	- path: path in S3
-	- expire: timestamp (in ms)
-	- v: v querystring, optional, for invalidating cache
+	returns query string to be appended to a url again (must be the url in argument for a Canned url (default), or anything matching wildcard for a Custom)
 
-// cfSignedUrl('foo/bar', Date.now()+2*86400e3)
 */
-module.exports = ({cfUrl, cfKeypairId, cfPrivateKey}) => 
-	function cfSignedUrl(path, expireTime, v='') {
-		const expire = Math.round(expireTime/1000);
-		const url = cfUrl + '/' + path;
-		const policy = JSON.stringify({
-			'Statement': [{
-				'Resource': url + '?v='+v,
-				'Condition': {
-					'DateLessThan': {
-						'AWS:EpochTime': expire
-					}
+function cfSign(url, expires, keypairId, privateKey) { // could do {url, ex..}  later, to avoid position errors
+
+	const time = Math.floor(expires/1000); // to unix
+	// const url = cfUrl + '/' + path;
+	const policyStr = JSON.stringify({
+		'Statement': [{
+			'Resource': url,
+			'Condition': {
+				'DateLessThan': {
+					'AWS:EpochTime': time
 				}
-			}]
-		}); // ipRange not included
-		
-		const signature = crypto.createSign('RSA-SHA1').update(policy).sign(cfPrivateKey, 'base64');
-		const policyStr = Buffer.from(policy).toString('base64');
-		return url +'?' + QS({
-			v,
-			'Expires': expire,
-			'Policy': normalizeBase64(policyStr),
-			'Signature': normalizeBase64(signature),
-			'Key-Pair-Id': cfKeypairId
-		});
-	}
+			}
+		}]
+	});
+	
+	const signature = crypto.createSign('RSA-SHA1').update(policyStr).sign(privateKey, 'base64');
+
+	return QS({
+		'Expires': time,
+		// 'Policy': normalizeBase64(Buffer.from(policyStr).toString('base64')), // not necessary for canned policy, necessary if using resource wildcards *
+		'Signature': normalizeBase64(signature),
+		'Key-Pair-Id': keypairId
+	});
+};
+
+
+cfSign.canned = cfSign;
+
+cfSign.custom = function cfCustomSign(url, expires, keypairId, privateKey) {
+
+	const time = Math.floor(expires/1000); // to unix
+
+	const policyStr = JSON.stringify({
+		'Statement': [{
+			'Resource': url,
+			'Condition': {
+				'DateLessThan': {
+					'AWS:EpochTime': time
+				}
+			}
+		}]
+	});
+	
+	const signature = crypto.createSign('RSA-SHA1').update(policyStr).sign(privateKey, 'base64');
+
+	return QS({
+		'Expires': time,
+		'Policy': normalizeBase64(Buffer.from(policyStr).toString('base64')),
+		'Signature': normalizeBase64(signature),
+		'Key-Pair-Id': keypairId
+	});
+};
+
 
 

@@ -1,15 +1,10 @@
 {
   "name": "cloudfront-signer",
-  "version": "1.0.0",
-  "description": "sign urls for AWS CLoudfront",
+  "version": "2.0.0",
+  "description": "Sign urls for AWS CloudFront",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "dependencies": {},
-  "devDependencies": {
-    "aws-cloudfront-sign": "^2.2.0"
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "node test/"
   },
@@ -19,7 +14,7 @@
   },
   "keywords": [
     "AWS",
-    "cloudfront"
+    "CloudFront"
   ],
   "author": "Cyril Auburtin <cyril.auburtin@gmail.com>",
   "license": "ISC",
