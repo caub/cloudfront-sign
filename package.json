@@ -1,6 +1,6 @@
 {
   "name": "cloudfront-signer",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Sign urls for AWS CloudFront",
   "main": "index.js",
   "dependencies": {},
@@ -14,7 +14,9 @@
   },
   "keywords": [
     "AWS",
-    "CloudFront"
+    "CloudFront",
+    "Sign",
+    "URL"
   ],
   "author": "Cyril Auburtin <cyril.auburtin@gmail.com>",
   "license": "ISC",

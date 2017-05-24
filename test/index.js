@@ -42,7 +42,7 @@ assert.equal(
 
 
 assert.equal(
-	cfSign.custom(cfUrl+'/*', d, cfKeypairId, cfPrivateKey),
+	cfSign(cfUrl+'/*', d, cfKeypairId, cfPrivateKey, true),
 	'Expires=1495231200&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMTIzLmNsb3VkZnJvbnQubmV0LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE0OTUyMzEyMDB9fX1dfQ__&Signature=VSBpF5uZ5ok6BZ7lnGjVSqPLpRcN1fDx2ntLEeXCtUXxvN3uw7Bzf5dzU2JaHenJAz2MbxeTMuZ6zQOWUhPSGz4kFX1CH-jPgwpk~-S1fMrnohZ~mlhL91429jHp5~rNeHcVSYysHIJLlvYsjm3QFsaLtHf7ld2ZmlQIMOBQa0GrQN9MZZabfxU-NAXWXMkdOdEUnv9YktQmjO74dNyJTIc38-bjLX1~NE-rDzwy3Y9~naa98Jbi54nOGl-u6po1Yt0SfOkDpA4~ut5G~oZA-AwEVxSdOL7FSRluckRA7ioyC8BXfPts4LcJSRSEnbduG3oxlyJm8mK4pZAjLdV5sw__&Key-Pair-Id=__cfKeypairId__'
 );
 
