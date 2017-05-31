@@ -32,7 +32,7 @@ oLWSvbabIU3ANxu6Ich6OGTikQqo+b+Pi0v5lv66nSb1lZSGk2NIll3SEF4/rmx/
 const assert = require('assert');
 const cfSign = require('../');
 
-var d = new Date(2017, 4, 20);
+var d = new Date(2017, 4, 20)/1000;
 
 
 assert.equal(

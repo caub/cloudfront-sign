@@ -12,7 +12,7 @@ const normalizeBase64 = str => str
 /** CloudFront url signer
 
 	- url: cloudfront origin + path in S3 for the resource
-	- expires: timestamp (in ms) or Date
+	- expires: expire UNIX time in seconds
 	- keypairId: CloudFront key-pair-id
 	- privateKey: CloudFront certificate as ascii string ( fs.readFileSync(path.resolve('./cloudfront.pem')).toString('ascii') )
 	- custom: flag to sign with Custom policy (defaults to =url.endsWith('*'))
@@ -20,9 +20,8 @@ const normalizeBase64 = str => str
 	returns query string to be appended to a url again (must be the url in argument for a Canned url (default), or anything matching wildcard for a Custom)
 
 */
-module.exports = function cfSign(url, expires, keypairId, privateKey, custom=url.endsWith('*')) { // todo 3 last in an obj
-
-	const time = Math.floor(expires/1000); // to unix
+module.exports = function cfSign(url, time, keypairId, privateKey, custom=url.endsWith('*')) { // todo 3 last in an obj
+	
 	// const url = cfUrl + '/' + path;
 	const policyStr = JSON.stringify({
 		'Statement': [{

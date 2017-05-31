@@ -6,8 +6,9 @@ Sign urls with [canned or custom policy](http://docs.aws.amazon.com/AmazonCloudF
 // canned:
 const cfSign = require('cloudfront-signer');
 
+const expire = Math.floor((Date.now()+86400e3)*0.001); // expire in one day
 const url = 'http://xyz.cloudfront.net/test/cool?fun=1';
-const signedUrl = url + '&' + cfSign(url, new Date(Date.now()+86400e3), cfKeypairId, cfPrivateKey)
+const signedUrl = url + '&' + cfSign(url, expire, cfKeypairId, cfPrivateKey)
 ```
 
 
@@ -15,7 +16,8 @@ const signedUrl = url + '&' + cfSign(url, new Date(Date.now()+86400e3), cfKeypai
 // custom (allow wildcards):
 const cfSign = require('cloudfront-signer');
 
-const qs = cfSign('http://xyz.cloudfront.net/test/*', new Date(Date.now()+86400e3), cfKeypairId, cfPrivateKey)
-// valid for 'http://xyz.cloudfront.net/test/test/bar' + qs
+const expire = Math.floor((Date.now()+86400e3)*0.001); // expire in one day
+const qs = cfSign('http://xyz.cloudfront.net/test/*', expire, cfKeypairId, cfPrivateKey)
+// valid for 'http://xyz.cloudfront.net/test/test/bar?' + qs
 // valid for 'http://xyz.cloudfront.net/test/test/cool?fun=1&' + qs
 ```
