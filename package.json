@@ -1,13 +1,8 @@
 {
   "name": "cloudfront-signer",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Sign urls for AWS CloudFront",
   "main": "index.js",
-  "dependencies": {},
-  "devDependencies": {},
-  "scripts": {
-    "test": "node test/"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/caub/cloudfront-signer.git"
@@ -23,5 +18,12 @@
   "bugs": {
     "url": "https://github.com/caub/cloudfront-signer/issues"
   },
-  "homepage": "https://github.com/caub/cloudfront-signer#readme"
+  "homepage": "https://github.com/caub/cloudfront-signer#readme",
+  "scripts": {
+    "test": "node test/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "aws-sdk": "^2.85.0"
+  }
 }

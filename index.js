@@ -38,13 +38,13 @@ module.exports = function cfSign(url, time, keypairId, privateKey, custom=url.en
 
 	return custom ? QS({
 		'Expires': time,
+		'Key-Pair-Id': keypairId,
 		'Policy': normalizeBase64(Buffer.from(policyStr).toString('base64')),
-		'Signature': normalizeBase64(signature),
-		'Key-Pair-Id': keypairId
+		'Signature': normalizeBase64(signature)
 	}) : QS({
 		'Expires': time,
-		'Signature': normalizeBase64(signature),
-		'Key-Pair-Id': keypairId
+		'Key-Pair-Id': keypairId,
+		'Signature': normalizeBase64(signature)
 	});
 };
 

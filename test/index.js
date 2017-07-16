@@ -1,3 +1,5 @@
+const AWS = require('aws-sdk');
+
 const cfUrl = 'https://d123.cloudfront.net';
 const cfKeypairId = '__cfKeypairId__';
 const cfPrivateKey = `-----BEGIN RSA PRIVATE KEY-----
@@ -29,20 +31,58 @@ oLWSvbabIU3ANxu6Ich6OGTikQqo+b+Pi0v5lv66nSb1lZSGk2NIll3SEF4/rmx/
 -----END RSA PRIVATE KEY-----
 `;
 
+
+const signer = new AWS.CloudFront.Signer(cfKeypairId, cfPrivateKey);
+
+
+
 const assert = require('assert');
 const cfSign = require('../');
+const urlParse = require('url').parse;
+const qsParse = require('querystring').parse;
 
-var d = new Date(2017, 4, 20)/1000;
+var d = Math.floor(new Date(2017, 4, 20)/1000);
 
 
-assert.equal(
-	cfSign(cfUrl+'/test', d, cfKeypairId, cfPrivateKey),
-	'Expires=1495231200&Signature=rj5SS8iD8NlINEp2OfSA7kG433lAveUf8EgTzkxtJAU~gbB1QpYIuxA6XrIebHJKYkcgYZ03QsDpn7582VJ3E~Y6Z43KdpuBob505wopvmEsCs1aFo323NnziiLesYJMvsaDRYj~kJndoS7pPRCo1VUFbOoTbOquhrHWh57zWUPsaR62AMYQ5Vhf66Uo340a71~zur-D2ez9cDzL3VGF7kD8IoYFsbC9b3~B6aJn3UxSqDBeQZdHaVsyfpV3-eHKOnbjtJPtMj-1wyds28jDiUxfSk~utwLz4z7v~KHD8YqWgX9GwM2K24AFGmJbcfsqzr5DDdgqG69UjmsWSZLvJA__&Key-Pair-Id=__cfKeypairId__'
+assert.deepEqual(
+	urlParse(signer.getSignedUrl({url:cfUrl+'/test', expires:d}), true).query,
+	{
+		Expires: 1495231200,
+		'Key-Pair-Id': '__cfKeypairId__',
+		Signature: 'rj5SS8iD8NlINEp2OfSA7kG433lAveUf8EgTzkxtJAU~gbB1QpYIuxA6XrIebHJKYkcgYZ03QsDpn7582VJ3E~Y6Z43KdpuBob505wopvmEsCs1aFo323NnziiLesYJMvsaDRYj~kJndoS7pPRCo1VUFbOoTbOquhrHWh57zWUPsaR62AMYQ5Vhf66Uo340a71~zur-D2ez9cDzL3VGF7kD8IoYFsbC9b3~B6aJn3UxSqDBeQZdHaVsyfpV3-eHKOnbjtJPtMj-1wyds28jDiUxfSk~utwLz4z7v~KHD8YqWgX9GwM2K24AFGmJbcfsqzr5DDdgqG69UjmsWSZLvJA__'
+	}
+);
+
+assert.deepEqual(
+	qsParse(cfSign(cfUrl+'/test', d, cfKeypairId, cfPrivateKey)),
+	{
+		Expires: 1495231200,
+		'Key-Pair-Id': '__cfKeypairId__',
+		Signature: 'rj5SS8iD8NlINEp2OfSA7kG433lAveUf8EgTzkxtJAU~gbB1QpYIuxA6XrIebHJKYkcgYZ03QsDpn7582VJ3E~Y6Z43KdpuBob505wopvmEsCs1aFo323NnziiLesYJMvsaDRYj~kJndoS7pPRCo1VUFbOoTbOquhrHWh57zWUPsaR62AMYQ5Vhf66Uo340a71~zur-D2ez9cDzL3VGF7kD8IoYFsbC9b3~B6aJn3UxSqDBeQZdHaVsyfpV3-eHKOnbjtJPtMj-1wyds28jDiUxfSk~utwLz4z7v~KHD8YqWgX9GwM2K24AFGmJbcfsqzr5DDdgqG69UjmsWSZLvJA__'
+	}
 );
 
 
-assert.equal(
-	cfSign(cfUrl+'/*', d, cfKeypairId, cfPrivateKey, true),
-	'Expires=1495231200&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMTIzLmNsb3VkZnJvbnQubmV0LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE0OTUyMzEyMDB9fX1dfQ__&Signature=VSBpF5uZ5ok6BZ7lnGjVSqPLpRcN1fDx2ntLEeXCtUXxvN3uw7Bzf5dzU2JaHenJAz2MbxeTMuZ6zQOWUhPSGz4kFX1CH-jPgwpk~-S1fMrnohZ~mlhL91429jHp5~rNeHcVSYysHIJLlvYsjm3QFsaLtHf7ld2ZmlQIMOBQa0GrQN9MZZabfxU-NAXWXMkdOdEUnv9YktQmjO74dNyJTIc38-bjLX1~NE-rDzwy3Y9~naa98Jbi54nOGl-u6po1Yt0SfOkDpA4~ut5G~oZA-AwEVxSdOL7FSRluckRA7ioyC8BXfPts4LcJSRSEnbduG3oxlyJm8mK4pZAjLdV5sw__&Key-Pair-Id=__cfKeypairId__'
+assert.deepEqual(
+	qsParse(cfSign(cfUrl+'/*', d, cfKeypairId, cfPrivateKey, true)),
+	{
+		Expires: 1495231200,
+		'Key-Pair-Id': '__cfKeypairId__',
+		Policy: 'eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMTIzLmNsb3VkZnJvbnQubmV0LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE0OTUyMzEyMDB9fX1dfQ__',
+		Signature: 'VSBpF5uZ5ok6BZ7lnGjVSqPLpRcN1fDx2ntLEeXCtUXxvN3uw7Bzf5dzU2JaHenJAz2MbxeTMuZ6zQOWUhPSGz4kFX1CH-jPgwpk~-S1fMrnohZ~mlhL91429jHp5~rNeHcVSYysHIJLlvYsjm3QFsaLtHf7ld2ZmlQIMOBQa0GrQN9MZZabfxU-NAXWXMkdOdEUnv9YktQmjO74dNyJTIc38-bjLX1~NE-rDzwy3Y9~naa98Jbi54nOGl-u6po1Yt0SfOkDpA4~ut5G~oZA-AwEVxSdOL7FSRluckRA7ioyC8BXfPts4LcJSRSEnbduG3oxlyJm8mK4pZAjLdV5sw__'
+	}
 );
 
+console.time(1);
+for (let i=0; i<1e3; i++) {
+	const url = cfUrl+'/test_'+i+'?v=8978';
+	const surl =url + '&'+ cfSign(url, d, cfKeypairId, cfPrivateKey);
+}
+console.timeEnd(1);
+
+console.time(2);
+for (let i=0; i<1e3; i++) {
+	const url = cfUrl+'/test_'+i+'?v=8978';
+	const surl = signer.getSignedUrl({url:url, expires:d});
+}
+console.timeEnd(2);
