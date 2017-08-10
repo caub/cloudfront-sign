@@ -1,6 +1,6 @@
 {
   "name": "cloudfront-signer",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "Sign urls for AWS CloudFront",
   "main": "index.js",
   "repository": {
@@ -24,6 +24,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "aws-sdk": "^2.85.0"
+    "aws-sdk": "^2.95.0"
   }
 }

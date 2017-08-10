@@ -29,7 +29,7 @@ LtnpGwKBgHblG0jaKbPGeE2QANZ1koiOoOHV007tGunmq/Bv2paRpgn/yzjpU/l8
 oLWSvbabIU3ANxu6Ich6OGTikQqo+b+Pi0v5lv66nSb1lZSGk2NIll3SEF4/rmx/
 5ijGogq7y/I62ZoYUy4oZ/tKVQMqIgn3tGJ3sGImxeSwfKzxfLer
 -----END RSA PRIVATE KEY-----
-`;
+`; // dummy pem
 
 
 const signer = new AWS.CloudFront.Signer(cfKeypairId, cfPrivateKey);
@@ -43,34 +43,25 @@ const qsParse = require('querystring').parse;
 
 var d = Math.floor(new Date(2017, 4, 20)/1000);
 
-
-assert.deepEqual(
-	urlParse(signer.getSignedUrl({url:cfUrl+'/test', expires:d}), true).query,
-	{
-		Expires: 1495231200,
-		'Key-Pair-Id': '__cfKeypairId__',
-		Signature: 'rj5SS8iD8NlINEp2OfSA7kG433lAveUf8EgTzkxtJAU~gbB1QpYIuxA6XrIebHJKYkcgYZ03QsDpn7582VJ3E~Y6Z43KdpuBob505wopvmEsCs1aFo323NnziiLesYJMvsaDRYj~kJndoS7pPRCo1VUFbOoTbOquhrHWh57zWUPsaR62AMYQ5Vhf66Uo340a71~zur-D2ez9cDzL3VGF7kD8IoYFsbC9b3~B6aJn3UxSqDBeQZdHaVsyfpV3-eHKOnbjtJPtMj-1wyds28jDiUxfSk~utwLz4z7v~KHD8YqWgX9GwM2K24AFGmJbcfsqzr5DDdgqG69UjmsWSZLvJA__'
-	}
-);
-
 assert.deepEqual(
 	qsParse(cfSign(cfUrl+'/test', d, cfKeypairId, cfPrivateKey)),
-	{
-		Expires: 1495231200,
-		'Key-Pair-Id': '__cfKeypairId__',
-		Signature: 'rj5SS8iD8NlINEp2OfSA7kG433lAveUf8EgTzkxtJAU~gbB1QpYIuxA6XrIebHJKYkcgYZ03QsDpn7582VJ3E~Y6Z43KdpuBob505wopvmEsCs1aFo323NnziiLesYJMvsaDRYj~kJndoS7pPRCo1VUFbOoTbOquhrHWh57zWUPsaR62AMYQ5Vhf66Uo340a71~zur-D2ez9cDzL3VGF7kD8IoYFsbC9b3~B6aJn3UxSqDBeQZdHaVsyfpV3-eHKOnbjtJPtMj-1wyds28jDiUxfSk~utwLz4z7v~KHD8YqWgX9GwM2K24AFGmJbcfsqzr5DDdgqG69UjmsWSZLvJA__'
-	}
+	urlParse(signer.getSignedUrl({url:cfUrl+'/test', expires:d}), true).query
 );
 
+const policy = JSON.stringify({
+		'Statement': [{
+			'Resource': cfUrl+'/*',
+			'Condition': {
+				'DateLessThan': {
+					'AWS:EpochTime': d
+				}
+			}
+		}]
+	});
 
 assert.deepEqual(
 	qsParse(cfSign(cfUrl+'/*', d, cfKeypairId, cfPrivateKey, true)),
-	{
-		Expires: 1495231200,
-		'Key-Pair-Id': '__cfKeypairId__',
-		Policy: 'eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMTIzLmNsb3VkZnJvbnQubmV0LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE0OTUyMzEyMDB9fX1dfQ__',
-		Signature: 'VSBpF5uZ5ok6BZ7lnGjVSqPLpRcN1fDx2ntLEeXCtUXxvN3uw7Bzf5dzU2JaHenJAz2MbxeTMuZ6zQOWUhPSGz4kFX1CH-jPgwpk~-S1fMrnohZ~mlhL91429jHp5~rNeHcVSYysHIJLlvYsjm3QFsaLtHf7ld2ZmlQIMOBQa0GrQN9MZZabfxU-NAXWXMkdOdEUnv9YktQmjO74dNyJTIc38-bjLX1~NE-rDzwy3Y9~naa98Jbi54nOGl-u6po1Yt0SfOkDpA4~ut5G~oZA-AwEVxSdOL7FSRluckRA7ioyC8BXfPts4LcJSRSEnbduG3oxlyJm8mK4pZAjLdV5sw__'
-	}
+	urlParse(signer.getSignedUrl({url:cfUrl+'/wat/foo', policy}), true).query
 );
 
 console.time(1);

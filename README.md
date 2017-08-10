@@ -1,6 +1,8 @@
-## CloudFront Signer
+## CloudFront Signer [![Build Status](https://travis-ci.org/caub/cloudfront-signer.svg?branch=master)](https://travis-ci.org/caub/cloudfront-signer)
 
 Sign urls with [canned or custom policy](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html)
+
+**Notice**: Use aws-sdk library rather, this one was done before I knew about it, and inspired from aws-cloudfront-sign
 
 ```js
 // canned:

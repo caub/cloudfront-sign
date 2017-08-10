@@ -37,7 +37,6 @@ module.exports = function cfSign(url, time, keypairId, privateKey, custom=url.en
 	const signature = crypto.createSign('RSA-SHA1').update(policyStr).sign(privateKey, 'base64');
 
 	return custom ? QS({
-		'Expires': time,
 		'Key-Pair-Id': keypairId,
 		'Policy': normalizeBase64(Buffer.from(policyStr).toString('base64')),
 		'Signature': normalizeBase64(signature)
